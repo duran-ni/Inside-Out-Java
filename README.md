@@ -104,6 +104,44 @@ mvn test
 
 - **Dado** que estoy en el menú principal, **cuando** selecciono "Salir",
   **entonces** el programa muestra un mensaje de despedida y finaliza la ejecución limpiamente (sin excepciones ni procesos colgados).
+
+  ### HU7 - Modificar datos de un momento vivido
+
+**COMO** usuario **QUIERO** modificar cualquier dato de un momento vivido (título, descripción, emoción o fecha del momento) **PARA** mantener mi diario actualizado cuando necesite corregir o ampliar información.
+
+ - **Dado** que existe un momento con un identificador concreto, **cuando** selecciono "Modificar" e introduzco ese identificador, **entonces** el sistema me muestra los datos actuales y me permite editar título, descripción, emoción y/o fecha del momento.
+
+ - **Dado** que introduzco al menos un dato nuevo válido, **cuando** confirmo, **entonces** el momento se actualiza con los nuevos valores y la fecha de modificación se actualiza automáticamente (la fecha de creación no cambia).
+
+ - **Dado** que introduzco un identificador inexistente, **cuando** confirmo, **entonces** el sistema informa de que no existe ese momento y no modifica nada.
+
+ - **Dado** que dejo el título o la descripción vacíos, **cuando** confirmo, **entonces** el sistema muestra un error y no guarda los cambios.
+
+ - **Dado** que introduzco una fecha con formato distinto de dd/mm/yyyy o una emoción fuera del rango válido (1-10), **cuando** confirmo, **entonces** el sistema muestra un error y no guarda los cambios.
+
+ ### HU8 - Generar un archivo de momentos vividos en formato CSV
+
+ **COMO** usuario **QUIERO** generar la lista completa de momentos vividos en un archivo CSV **PARA** guardar, compartir o analizar mis recuerdos fuera de la aplicación.
+
+ - **Dado** que existen momentos registrados, **cuando** selecciono "Exportar a CSV", **entonces** se genera un archivo .csv con una fila por momento, incluyendo identificador, título, descripción, emoción, fecha del momento, fecha de creación y fecha de modificación.
+
+ - **Dado** que se genera el archivo correctamente, **cuando** finaliza la exportación, **entonces** el sistema confirma la ruta/nombre del archivo generado.
+
+ - **Dado** que no existe ningún momento registrado, **cuando** selecciono "Exportar a CSV", **entonces** el sistema informa de que no hay datos que exportar y no genera un archivo vacío.
+
+ **Dado** que ocurre un error de escritura (por ejemplo, permisos o ruta inválida), **cuando** se intenta generar el archivo, **entonces** el sistema muestra un mensaje de error controlado (sin cerrar la aplicación de forma inesperada).
+
+ ### HU9 - Acceso protegido por contraseña
+
+ **COMO** usuario **QUIERO** acceder a mi diario únicamente mediante una contraseña **PARA** asegurar que mis momentos vividos estén protegidos y solo yo pueda consultarlos.
+
+- **Dado** que inicio la aplicación, **cuando** se muestra la pantalla inicial, **entonces** el sistema solicita una contraseña antes de mostrar el menú principal.
+
+- **Dado** que introduzco la contraseña correcta, **cuando** confirmo, **entonces** el sistema me da acceso al menú principal.
+
+- **Dado** que introduzco una contraseña incorrecta, **cuando** confirmo, **entonces** el sistema muestra un mensaje de error y no me da acceso al menú principal.
+
+- **Dado** que agoto un número máximo de intentos fallidos (3), **cuando** ocurre el último intento fallido, **entonces** el sistema finaliza la ejecución de forma controlada.
 ---
 
 ## 🧮 Diagramas
