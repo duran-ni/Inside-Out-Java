@@ -105,7 +105,7 @@ mvn test
 - **Dado** que estoy en el menú principal, **cuando** selecciono "Salir",
   **entonces** el programa muestra un mensaje de despedida y finaliza la ejecución limpiamente (sin excepciones ni procesos colgados).
 
-  ### HU7 - Modificar datos de un momento vivido
+### HU7 - Modificar datos de un momento vivido
 
 **COMO** usuario **QUIERO** modificar cualquier dato de un momento vivido (título, descripción, emoción o fecha del momento) **PARA** mantener mi diario actualizado cuando necesite corregir o ampliar información.
 
