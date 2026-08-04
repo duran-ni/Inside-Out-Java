@@ -88,4 +88,37 @@ class DiaryServiceTest {
     void deleteMoment_withNullId_shouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> service.deleteMoment(null));
     }
+
+    @Test
+    void updateMoment_withExistingId_shouldUpdateFields() {
+        Moment added = service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+
+        Moment updated = service.updateMoment(added.getId(), "Updated title", "Updated description",
+                Emotion.NOSTALGIA, SAMPLE_DATE);
+
+        assertThat(updated.getId(), is(added.getId()));
+        assertThat(updated.getTitle(), is("Updated title"));
+        assertThat(updated.getEmotion(), is(Emotion.NOSTALGIA));
+        assertThat(updated.getCreatedAt(), is(added.getCreatedAt()));
+    }
+
+    @Test
+    void updateMoment_withNonExistingId_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                service.updateMoment(NON_EXISTING_ID, "Title", "Description", Emotion.JOY, SAMPLE_DATE));
+    }
+
+    @Test
+    void updateMoment_withNullId_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                service.updateMoment(null, "Title", "Description", Emotion.JOY, SAMPLE_DATE));
+    }
+
+    @Test
+    void updateMoment_withBlankTitle_shouldThrowException() {
+        Moment added = service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                service.updateMoment(added.getId(), "   ", "Description", Emotion.JOY, SAMPLE_DATE));
+    }
 }

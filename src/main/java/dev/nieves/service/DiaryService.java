@@ -24,26 +24,15 @@ public class DiaryService implements InterfaceDiaryService {
     /**
      * Crea un nuevo momento vivido con los datos proporcionados por el usuario.
      *
-     * @param title       título del momento
+     * @param title título del momento
      * @param description descripción del momento
-     * @param emotion     emoción asociada
-     * @param momentDate  fecha en la que ocurrió el momento
+     * @param emotion emoción asociada
+     * @param momentDate fecha en la que ocurrió el momento
      * @return el momento creado, ya con id asignado
      */
     @Override
     public Moment addMoment(String title, String description, Emotion emotion, LocalDate momentDate) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("Title cannot be empty");
-        }
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("Description cannot be empty");
-        }
-        if (emotion == null) {
-            throw new IllegalArgumentException("Emotion is required");
-        }
-        if (momentDate == null) {
-            throw new IllegalArgumentException("Moment date is required");
-        }
+        validateMomentData(title, description, emotion, momentDate);
 
         Moment moment = new Moment(title, description, emotion, momentDate);
         return basicRepository.save(moment);
@@ -62,6 +51,49 @@ public class DiaryService implements InterfaceDiaryService {
         boolean deleted = editableRepository.delete(id);
         if (!deleted) {
             throw new IllegalArgumentException("Moment with id " + id + " does not exist");
+        }
+    }
+
+    /**
+     * Modifica un momento vivido existente, conservando su id y fecha de creación.
+     *
+     * @param id identificador del momento a modificar
+     * @param title nuevo título
+     * @param description nueva descripción
+     * @param emotion nueva emoción
+     * @param momentDate nueva fecha del momento
+     * @return el momento ya actualizado
+     */
+    @Override
+    public Moment updateMoment(Integer id, String title, String description, Emotion emotion, LocalDate momentDate) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id is required");
+        }
+        validateMomentData(title, description, emotion, momentDate);
+
+        Moment existingMoment = basicRepository.show(id)
+                .orElseThrow(() -> new IllegalArgumentException("Moment with id " + id + " does not exist"));
+
+        existingMoment.setTitle(title);
+        existingMoment.setDescription(description);
+        existingMoment.setEmotion(emotion);
+        existingMoment.setMomentDate(momentDate);
+
+        return editableRepository.update(id, existingMoment);
+    }
+
+    private void validateMomentData(String title, String description, Emotion emotion, LocalDate momentDate) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title cannot be empty");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Description cannot be empty");
+        }
+        if (emotion == null) {
+            throw new IllegalArgumentException("Emotion is required");
+        }
+        if (momentDate == null) {
+            throw new IllegalArgumentException("Moment date is required");
         }
     }
 }
