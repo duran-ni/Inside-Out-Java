@@ -16,6 +16,14 @@ public class Moment {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    /**
+     * Crea un nuevo momento vivido con los datos proporcionados por el usuario.
+     *
+     * @param title título del momento
+     * @param description descripción del momento
+     * @param emotion emoción asociada
+     * @param momentDate fecha en la que ocurrió el momento
+     */
     public Moment(String title, String description, Emotion emotion, LocalDate momentDate) {
         this.title = title;
         this.description = description;

@@ -5,6 +5,9 @@ import dev.nieves.model.Moment;
 import dev.nieves.repository.InterfaceRepositoryBasicActions;
 import java.time.LocalDate;
 
+/**
+ * Implementación de la lógica de negocio relacionada con los momentos vividos.
+ */
 public class DiaryService implements InterfaceDiaryService {
 
     private final InterfaceRepositoryBasicActions repository;

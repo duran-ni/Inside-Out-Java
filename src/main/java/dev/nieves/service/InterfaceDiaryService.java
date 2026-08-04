@@ -8,5 +8,6 @@ import java.time.LocalDate;
  * Reglas de negocio relacionadas con los momentos vividos.
  */
 public interface InterfaceDiaryService {
+
     Moment addMoment(String title, String description, Emotion emotion, LocalDate momentDate);
 }

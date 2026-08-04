@@ -1,6 +1,13 @@
 package dev.nieves.repository;
 
+import dev.nieves.model.Moment;
+
+/**
+ * Operaciones de edición, no todas las entidades las necesitan.
+ */
 public interface InterfaceRepositoryEditableActions {
-    dev.nieves.model.Moment update(Integer id, dev.nieves.model.Moment moment);
+
+    Moment update(Integer id, Moment moment);
+
     boolean delete(Integer id);
 }
