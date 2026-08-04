@@ -3,6 +3,7 @@ package dev.nieves.service;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Reglas de negocio relacionadas con los momentos vividos.
@@ -10,4 +11,6 @@ import java.time.LocalDate;
 public interface InterfaceDiaryService {
 
     Moment addMoment(String title, String description, Emotion emotion, LocalDate momentDate);
+
+    List<Moment> listMoments();
 }

@@ -4,6 +4,7 @@ import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
 import dev.nieves.repository.InterfaceRepositoryBasicActions;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Implementación de la lógica de negocio relacionada con los momentos vividos.
@@ -33,5 +34,10 @@ public class DiaryService implements InterfaceDiaryService {
 
         Moment moment = new Moment(title, description, emotion, momentDate);
         return repository.save(moment);
+    }
+
+    @Override
+    public List<Moment> listMoments() {
+        return repository.list();
     }
 }
