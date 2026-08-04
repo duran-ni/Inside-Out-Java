@@ -13,4 +13,6 @@ public interface InterfaceDiaryService {
     Moment addMoment(String title, String description, Emotion emotion, LocalDate momentDate);
 
     List<Moment> listMoments();
+
+    void deleteMoment(Integer id);
 }

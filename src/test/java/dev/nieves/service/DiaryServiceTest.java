@@ -22,12 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DiaryServiceTest {
 
     private static final LocalDate SAMPLE_DATE = LocalDate.of(2026, Month.JANUARY, 15);
+    private static final int NON_EXISTING_ID = 999;
 
     private InterfaceDiaryService service;
 
     @BeforeEach
     void setUp() {
-        service = new DiaryService(new InMemoryDiaryRepository());
+        InMemoryDiaryRepository repository = new InMemoryDiaryRepository();
+        service = new DiaryService(repository, repository);
     }
 
     @Test
@@ -66,5 +68,24 @@ class DiaryServiceTest {
         List<Moment> result = service.listMoments();
 
         assertThat(result, hasSize(2));
+    }
+
+    @Test
+    void deleteMoment_withExistingId_shouldRemoveIt() {
+        Moment added = service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+
+        service.deleteMoment(added.getId());
+
+        assertThat(service.listMoments(), is(empty()));
+    }
+
+    @Test
+    void deleteMoment_withNonExistingId_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> service.deleteMoment(NON_EXISTING_ID));
+    }
+
+    @Test
+    void deleteMoment_withNullId_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> service.deleteMoment(null));
     }
 }
