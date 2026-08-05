@@ -17,4 +17,6 @@ public interface InterfaceDiaryService {
     void deleteMoment(Integer id);
 
     Moment updateMoment(Integer id, String title, String description, Emotion emotion, LocalDate momentDate);
+
+    List<Moment> getMomentsByEmotion(Emotion emotion);
 }

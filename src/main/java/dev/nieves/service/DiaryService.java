@@ -6,6 +6,7 @@ import dev.nieves.repository.InterfaceRepositoryBasicActions;
 import dev.nieves.repository.InterfaceRepositoryEditableActions;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementación de la lógica de negocio relacionada con los momentos vividos.
@@ -80,6 +81,16 @@ public class DiaryService implements InterfaceDiaryService {
         existingMoment.setMomentDate(momentDate);
 
         return editableRepository.update(id, existingMoment);
+    }
+
+    @Override
+    public List<Moment> getMomentsByEmotion(Emotion emotion) {
+        if (emotion == null) {
+            throw new IllegalArgumentException("Emotion is required");
+        }
+        return basicRepository.list().stream()
+                .filter(moment -> moment.getEmotion() == emotion)
+                .collect(Collectors.toList());
     }
 
     private void validateMomentData(String title, String description, Emotion emotion, LocalDate momentDate) {

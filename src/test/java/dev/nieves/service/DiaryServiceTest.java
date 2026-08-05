@@ -121,4 +121,29 @@ class DiaryServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 service.updateMoment(added.getId(), "   ", "Description", Emotion.JOY, SAMPLE_DATE));
     }
+
+    @Test
+    void getMomentsByEmotion_withMatchingMoments_shouldReturnOnlyThose() {
+        service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+        service.addMoment("Hard day", "Struggled a lot today", Emotion.SADNESS, SAMPLE_DATE);
+        service.addMoment("Another good day", "Nice weather", Emotion.JOY, SAMPLE_DATE);
+
+        List<Moment> result = service.getMomentsByEmotion(Emotion.JOY);
+
+        assertThat(result, hasSize(2));
+    }
+
+    @Test
+    void getMomentsByEmotion_withNoMatchingMoments_shouldReturnEmptyList() {
+        service.addMoment("Hard day", "Struggled a lot today", Emotion.SADNESS, SAMPLE_DATE);
+
+        List<Moment> result = service.getMomentsByEmotion(Emotion.JOY);
+
+        assertThat(result, is(empty()));
+    }
+
+    @Test
+    void getMomentsByEmotion_withNullEmotion_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> service.getMomentsByEmotion(null));
+    }
 }
