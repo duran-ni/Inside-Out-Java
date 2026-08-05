@@ -1,10 +1,12 @@
 package dev.nieves.service;
 
+import dev.nieves.export.InterfaceMomentExporter;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
 import dev.nieves.model.MonthYear;
 import dev.nieves.repository.InterfaceRepositoryBasicActions;
 import dev.nieves.repository.InterfaceRepositoryEditableActions;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,20 +18,31 @@ public class DiaryService implements InterfaceDiaryService {
 
     private final InterfaceRepositoryBasicActions basicRepository;
     private final InterfaceRepositoryEditableActions editableRepository;
+    private final InterfaceMomentExporter exporter;
 
+    /**
+     * Crea el servicio de diario, inyectando sus dependencias.
+     *
+     * @param basicRepository    operaciones básicas de acceso a datos
+     * @param editableRepository operaciones de edición de datos
+     * @param exporter           componente encargado de exportar los momentos a un
+     *                           formato externo
+     */
     public DiaryService(InterfaceRepositoryBasicActions basicRepository,
-            InterfaceRepositoryEditableActions editableRepository) {
+            InterfaceRepositoryEditableActions editableRepository,
+            InterfaceMomentExporter exporter) {
         this.basicRepository = basicRepository;
         this.editableRepository = editableRepository;
+        this.exporter = exporter;
     }
 
     /**
      * Crea un nuevo momento vivido con los datos proporcionados por el usuario.
      *
-     * @param title título del momento
+     * @param title       título del momento
      * @param description descripción del momento
-     * @param emotion emoción asociada
-     * @param momentDate fecha en la que ocurrió el momento
+     * @param emotion     emoción asociada
+     * @param momentDate  fecha en la que ocurrió el momento
      * @return el momento creado, ya con id asignado
      */
     @Override
@@ -59,11 +72,11 @@ public class DiaryService implements InterfaceDiaryService {
     /**
      * Modifica un momento vivido existente, conservando su id y fecha de creación.
      *
-     * @param id identificador del momento a modificar
-     * @param title nuevo título
+     * @param id          identificador del momento a modificar
+     * @param title       nuevo título
      * @param description nueva descripción
-     * @param emotion nueva emoción
-     * @param momentDate nueva fecha del momento
+     * @param emotion     nueva emoción
+     * @param momentDate  nueva fecha del momento
      * @return el momento ya actualizado
      */
     @Override
@@ -103,6 +116,19 @@ public class DiaryService implements InterfaceDiaryService {
                 .filter(moment -> moment.getMomentDate().getMonthValue() == monthYear.getMonth()
                         && moment.getMomentDate().getYear() == monthYear.getYear())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String exportToCsv() {
+        List<Moment> moments = basicRepository.list();
+        if (moments.isEmpty()) {
+            throw new IllegalStateException("There are no moments to export");
+        }
+        try {
+            return exporter.export(moments);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not export moments to CSV", e);
+        }
     }
 
     private void validateMomentData(String title, String description, Emotion emotion, LocalDate momentDate) {

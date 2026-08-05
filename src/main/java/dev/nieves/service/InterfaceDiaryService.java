@@ -22,4 +22,6 @@ public interface InterfaceDiaryService {
     List<Moment> getMomentsByEmotion(Emotion emotion);
 
     List<Moment> getMomentsByMonth(MonthYear monthYear);
+
+    String exportToCsv();
 }

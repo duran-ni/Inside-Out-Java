@@ -1,14 +1,18 @@
 package dev.nieves.service;
 
+import dev.nieves.export.CsvMomentExporter;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
 import dev.nieves.model.MonthYear;
 import dev.nieves.repository.InMemoryDiaryRepository;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -29,9 +33,10 @@ class DiaryServiceTest {
     private InterfaceDiaryService service;
 
     @BeforeEach
-    void setUp() {
+   void setUp(@TempDir Path tempDir) {
         InMemoryDiaryRepository repository = new InMemoryDiaryRepository();
-        service = new DiaryService(repository, repository);
+        CsvMomentExporter exporter = new CsvMomentExporter(tempDir);
+        service = new DiaryService(repository, repository, exporter);
     }
 
     @Test
@@ -174,5 +179,19 @@ class DiaryServiceTest {
     @Test
     void getMomentsByMonth_withNullMonthYear_shouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> service.getMomentsByMonth(null));
+    }
+
+    @Test
+    void exportToCsv_withMoments_shouldCreateFile() {
+        service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+
+        String filePath = service.exportToCsv();
+
+        assertThat(Files.exists(Path.of(filePath)), is(true));
+    }
+
+    @Test
+    void exportToCsv_withNoMoments_shouldThrowException() {
+        assertThrows(IllegalStateException.class, () -> service.exportToCsv());
     }
 }
