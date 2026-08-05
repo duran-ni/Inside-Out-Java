@@ -2,6 +2,7 @@ package dev.nieves.service;
 
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
+import dev.nieves.model.MonthYear;
 import dev.nieves.repository.InMemoryDiaryRepository;
 import java.time.LocalDate;
 import java.time.Month;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DiaryServiceTest {
 
     private static final LocalDate SAMPLE_DATE = LocalDate.of(2026, Month.JANUARY, 15);
+    private static final LocalDate OTHER_MONTH_DATE = LocalDate.of(2026, Month.MARCH, 10);
     private static final int NON_EXISTING_ID = 999;
 
     private InterfaceDiaryService service;
@@ -104,22 +106,22 @@ class DiaryServiceTest {
 
     @Test
     void updateMoment_withNonExistingId_shouldThrowException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                service.updateMoment(NON_EXISTING_ID, "Title", "Description", Emotion.JOY, SAMPLE_DATE));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateMoment(NON_EXISTING_ID, "Title", "Description", Emotion.JOY, SAMPLE_DATE));
     }
 
     @Test
     void updateMoment_withNullId_shouldThrowException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                service.updateMoment(null, "Title", "Description", Emotion.JOY, SAMPLE_DATE));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateMoment(null, "Title", "Description", Emotion.JOY, SAMPLE_DATE));
     }
 
     @Test
     void updateMoment_withBlankTitle_shouldThrowException() {
         Moment added = service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                service.updateMoment(added.getId(), "   ", "Description", Emotion.JOY, SAMPLE_DATE));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateMoment(added.getId(), "   ", "Description", Emotion.JOY, SAMPLE_DATE));
     }
 
     @Test
@@ -145,5 +147,32 @@ class DiaryServiceTest {
     @Test
     void getMomentsByEmotion_withNullEmotion_shouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> service.getMomentsByEmotion(null));
+    }
+
+    @Test
+    void getMomentsByMonth_withMatchingMoments_shouldReturnOnlyThose() {
+        service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+        service.addMoment("Another good day", "Nice weather", Emotion.JOY, SAMPLE_DATE);
+        service.addMoment("March day", "Different month", Emotion.SADNESS, OTHER_MONTH_DATE);
+
+        MonthYear filter = new MonthYear(SAMPLE_DATE.getMonthValue(), SAMPLE_DATE.getYear());
+        List<Moment> result = service.getMomentsByMonth(filter);
+
+        assertThat(result, hasSize(2));
+    }
+
+    @Test
+    void getMomentsByMonth_withNoMatchingMoments_shouldReturnEmptyList() {
+        service.addMoment("March day", "Different month", Emotion.SADNESS, OTHER_MONTH_DATE);
+
+        MonthYear filter = new MonthYear(SAMPLE_DATE.getMonthValue(), SAMPLE_DATE.getYear());
+        List<Moment> result = service.getMomentsByMonth(filter);
+
+        assertThat(result, is(empty()));
+    }
+
+    @Test
+    void getMomentsByMonth_withNullMonthYear_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> service.getMomentsByMonth(null));
     }
 }

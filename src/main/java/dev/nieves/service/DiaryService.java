@@ -2,6 +2,7 @@ package dev.nieves.service;
 
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
+import dev.nieves.model.MonthYear;
 import dev.nieves.repository.InterfaceRepositoryBasicActions;
 import dev.nieves.repository.InterfaceRepositoryEditableActions;
 import java.time.LocalDate;
@@ -90,6 +91,17 @@ public class DiaryService implements InterfaceDiaryService {
         }
         return basicRepository.list().stream()
                 .filter(moment -> moment.getEmotion() == emotion)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Moment> getMomentsByMonth(MonthYear monthYear) {
+        if (monthYear == null) {
+            throw new IllegalArgumentException("Month and year are required");
+        }
+        return basicRepository.list().stream()
+                .filter(moment -> moment.getMomentDate().getMonthValue() == monthYear.getMonth()
+                        && moment.getMomentDate().getYear() == monthYear.getYear())
                 .collect(Collectors.toList());
     }
 
