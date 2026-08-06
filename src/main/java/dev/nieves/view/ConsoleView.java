@@ -61,7 +61,7 @@ public class ConsoleView {
         switch (option) {
             case "1" -> addMoment();
             case "2" -> listMoments();
-            case "3" -> System.out.println("Eliminar momento (pendiente de implementar)");
+            case "3" -> deleteMoment();
             case "4" -> System.out.println("Modificar momento (pendiente de implementar)");
             case "5" -> System.out.println("Filtrar por emoción (pendiente de implementar)");
             case "6" -> System.out.println("Filtrar por mes (pendiente de implementar)");
@@ -116,6 +116,30 @@ public class ConsoleView {
         System.out.println("Descripción: " + moment.getDescription());
         System.out.println("Emoción: " + moment.getEmotion().getDisplayName());
         System.out.println("Fecha: " + moment.getMomentDate().format(DATE_FORMAT));
+    }
+
+    private void deleteMoment() {
+        Integer id = readId("Id del momento a eliminar: ");
+        if (id == null) {
+            return;
+        }
+        try {
+            controller.deleteMoment(id);
+            System.out.println("Momento eliminado correctamente.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private Integer readId(String prompt) {
+        System.out.print(prompt);
+        String input = scanner.nextLine();
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("El id debe ser un número.");
+            return null;
+        }
     }
 
     private Emotion readEmotion() {

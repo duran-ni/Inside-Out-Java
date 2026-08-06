@@ -24,4 +24,8 @@ public class MomentController {
     public List<Moment> listMoments() {
         return diaryService.listMoments();
     }
+
+    public void deleteMoment(Integer id) {
+        diaryService.deleteMoment(id);
+    }
 }
