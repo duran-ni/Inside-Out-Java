@@ -2,9 +2,11 @@ package dev.nieves.view;
 
 import dev.nieves.controller.MomentController;
 import dev.nieves.model.Emotion;
+import dev.nieves.model.Moment;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -58,7 +60,7 @@ public class ConsoleView {
     private void handleOption(String option) {
         switch (option) {
             case "1" -> addMoment();
-            case "2" -> System.out.println("Listar momentos (pendiente de implementar)");
+            case "2" -> listMoments();
             case "3" -> System.out.println("Eliminar momento (pendiente de implementar)");
             case "4" -> System.out.println("Modificar momento (pendiente de implementar)");
             case "5" -> System.out.println("Filtrar por emoción (pendiente de implementar)");
@@ -94,6 +96,26 @@ public class ConsoleView {
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    private void listMoments() {
+        List<Moment> moments = controller.listMoments();
+        if (moments.isEmpty()) {
+            System.out.println("No hay momentos registrados todavía.");
+            return;
+        }
+        for (Moment moment : moments) {
+            printMoment(moment);
+        }
+    }
+
+    private void printMoment(Moment moment) {
+        System.out.println("---");
+        System.out.println("Id: " + moment.getId());
+        System.out.println("Título: " + moment.getTitle());
+        System.out.println("Descripción: " + moment.getDescription());
+        System.out.println("Emoción: " + moment.getEmotion().getDisplayName());
+        System.out.println("Fecha: " + moment.getMomentDate().format(DATE_FORMAT));
     }
 
     private Emotion readEmotion() {
