@@ -1,6 +1,10 @@
 package dev.nieves.view;
 
 import dev.nieves.controller.MomentController;
+import dev.nieves.model.Emotion;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -21,6 +25,8 @@ public class ConsoleView {
             8. Salir
             ======================
             Elige una opción: """;
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final MomentController controller;
     private final Scanner scanner;
@@ -51,7 +57,7 @@ public class ConsoleView {
 
     private void handleOption(String option) {
         switch (option) {
-            case "1" -> System.out.println("Añadir momento (pendiente de implementar)");
+            case "1" -> addMoment();
             case "2" -> System.out.println("Listar momentos (pendiente de implementar)");
             case "3" -> System.out.println("Eliminar momento (pendiente de implementar)");
             case "4" -> System.out.println("Modificar momento (pendiente de implementar)");
@@ -62,6 +68,60 @@ public class ConsoleView {
                 running = false;
             }
             default -> System.out.println("Opción no válida, inténtalo de nuevo.");
+        }
+    }
+
+    private void addMoment() {
+        System.out.print("Título: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Descripción: ");
+        String description = scanner.nextLine();
+
+        Emotion emotion = readEmotion();
+        if (emotion == null) {
+            return;
+        }
+
+        LocalDate momentDate = readDate("Fecha del momento (dd/MM/yyyy): ");
+        if (momentDate == null) {
+            return;
+        }
+
+        try {
+            controller.addMoment(title, description, emotion, momentDate);
+            System.out.println("Momento añadido correctamente.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private Emotion readEmotion() {
+        System.out.println("Elige una emoción:");
+        Emotion[] emotions = Emotion.values();
+        for (int i = 0; i < emotions.length; i++) {
+            System.out.println((i + 1) + ". " + emotions[i].getDisplayName());
+        }
+        System.out.print("Opción: ");
+        String input = scanner.nextLine();
+
+        try {
+            int index = Integer.parseInt(input) - 1;
+            return emotions[index];
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Emoción no válida.");
+            return null;
+        }
+    }
+
+    private LocalDate readDate(String prompt) {
+        System.out.print(prompt);
+        String input = scanner.nextLine();
+        try {
+            return LocalDate.parse(input, DATE_FORMAT);
+        } catch (DateTimeParseException e) {
+            System.out.println("Formato de fecha no válido, debe ser dd/MM/yyyy.");
+            return null;
         }
     }
 }
