@@ -39,7 +39,7 @@ public class ConsoleView {
      * Crea la vista de consola, inyectando el controlador y el lector de entrada.
      *
      * @param controller controlador que coordina las peticiones hacia el Service
-     * @param scanner lector de la entrada estándar del usuario
+     * @param scanner    lector de la entrada estándar del usuario
      */
     public ConsoleView(MomentController controller, Scanner scanner) {
         this.controller = controller;
@@ -67,11 +67,14 @@ public class ConsoleView {
             case "5" -> filterByEmotion();
             case "6" -> filterByMonth();
             case "7" -> exportToCsv();
-            case "8" -> {
-                running = false;
-            }
+            case "8" -> exit();
             default -> System.out.println("Opción no válida, inténtalo de nuevo.");
         }
+    }
+
+    private void exit() {
+        System.out.println("¡Hasta pronto! Gracias por usar Mi Diario.");
+        running = false;
     }
 
     private void addMoment() {
