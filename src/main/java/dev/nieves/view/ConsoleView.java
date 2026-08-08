@@ -62,7 +62,7 @@ public class ConsoleView {
             case "1" -> addMoment();
             case "2" -> listMoments();
             case "3" -> deleteMoment();
-            case "4" -> System.out.println("Modificar momento (pendiente de implementar)");
+            case "4" -> updateMoment();
             case "5" -> System.out.println("Filtrar por emoción (pendiente de implementar)");
             case "6" -> System.out.println("Filtrar por mes (pendiente de implementar)");
             case "7" -> System.out.println("Exportar a CSV (pendiente de implementar)");
@@ -128,6 +128,80 @@ public class ConsoleView {
             System.out.println("Momento eliminado correctamente.");
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void updateMoment() {
+        Integer id = readId("Id del momento a modificar: ");
+        if (id == null) {
+            return;
+        }
+
+        Moment current;
+        try {
+            current = controller.getMomentById(id);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("Datos actuales:");
+        printMoment(current);
+
+        System.out.print("Nuevo título (déjalo en blanco para mantener el actual): ");
+        String title = scanner.nextLine();
+        if (title.isBlank()) {
+            title = current.getTitle();
+        }
+
+        System.out.print("Nueva descripción (déjala en blanco para mantener la actual): ");
+        String description = scanner.nextLine();
+        if (description.isBlank()) {
+            description = current.getDescription();
+        }
+
+        Emotion emotion = readEmotionOrKeepCurrent(current.getEmotion());
+        LocalDate momentDate = readDateOrKeepCurrent(current.getMomentDate());
+
+        try {
+            controller.updateMoment(id, title, description, emotion, momentDate);
+            System.out.println("Momento modificado correctamente.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private Emotion readEmotionOrKeepCurrent(Emotion current) {
+        System.out.println("Elige una nueva emoción (0 para mantener: " + current.getDisplayName() + "):");
+        Emotion[] emotions = Emotion.values();
+        for (int i = 0; i < emotions.length; i++) {
+            System.out.println((i + 1) + ". " + emotions[i].getDisplayName());
+        }
+        System.out.print("Opción: ");
+        String input = scanner.nextLine();
+        if (input.isBlank() || "0".equals(input)) {
+            return current;
+        }
+        try {
+            int index = Integer.parseInt(input) - 1;
+            return emotions[index];
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Emoción no válida, se mantiene la actual.");
+            return current;
+        }
+    }
+
+    private LocalDate readDateOrKeepCurrent(LocalDate current) {
+        System.out.print("Nueva fecha (dd/MM/yyyy, en blanco para mantener " + current.format(DATE_FORMAT) + "): ");
+        String input = scanner.nextLine();
+        if (input.isBlank()) {
+            return current;
+        }
+        try {
+            return LocalDate.parse(input, DATE_FORMAT);
+        } catch (DateTimeParseException e) {
+            System.out.println("Formato de fecha no válido, se mantiene la actual.");
+            return current;
         }
     }
 

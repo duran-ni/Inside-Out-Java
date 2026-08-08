@@ -28,4 +28,12 @@ public class MomentController {
     public void deleteMoment(Integer id) {
         diaryService.deleteMoment(id);
     }
+
+    public Moment getMomentById(Integer id) {
+        return diaryService.getMomentById(id);
+    }
+
+    public Moment updateMoment(Integer id, String title, String description, Emotion emotion, LocalDate momentDate) {
+        return diaryService.updateMoment(id, title, description, emotion, momentDate);
+    }
 }

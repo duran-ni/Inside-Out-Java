@@ -86,8 +86,7 @@ public class DiaryService implements InterfaceDiaryService {
         }
         validateMomentData(title, description, emotion, momentDate);
 
-        Moment existingMoment = basicRepository.show(id)
-                .orElseThrow(() -> new IllegalArgumentException("Moment with id " + id + " does not exist"));
+        Moment existingMoment = getMomentById(id);
 
         existingMoment.setTitle(title);
         existingMoment.setDescription(description);
@@ -131,6 +130,15 @@ public class DiaryService implements InterfaceDiaryService {
         }
     }
 
+    @Override
+    public Moment getMomentById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id is required");
+        }
+        return basicRepository.show(id)
+                .orElseThrow(() -> new IllegalArgumentException("Moment with id " + id + " does not exist"));
+    }
+
     private void validateMomentData(String title, String description, Emotion emotion, LocalDate momentDate) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be empty");
@@ -145,4 +153,5 @@ public class DiaryService implements InterfaceDiaryService {
             throw new IllegalArgumentException("Moment date is required");
         }
     }
+
 }

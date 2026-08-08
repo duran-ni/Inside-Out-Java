@@ -194,4 +194,18 @@ class DiaryServiceTest {
     void exportToCsv_withNoMoments_shouldThrowException() {
         assertThrows(IllegalStateException.class, () -> service.exportToCsv());
     }
+
+    @Test
+    void getMomentById_withExistingId_shouldReturnIt() {
+        Moment added = service.addMoment("First day", "It was a great day", Emotion.JOY, SAMPLE_DATE);
+
+        Moment result = service.getMomentById(added.getId());
+
+        assertThat(result.getId(), is(added.getId()));
+    }
+
+    @Test
+    void getMomentById_withNonExistingId_shouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> service.getMomentById(NON_EXISTING_ID));
+    }
 }
