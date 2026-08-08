@@ -1,5 +1,6 @@
 package dev.nieves.service;
 
+import com.google.inject.Inject;
 import dev.nieves.export.InterfaceMomentExporter;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
@@ -28,6 +29,7 @@ public class DiaryService implements InterfaceDiaryService {
      * @param exporter           componente encargado de exportar los momentos a un
      *                           formato externo
      */
+    @Inject
     public DiaryService(InterfaceRepositoryBasicActions basicRepository,
             InterfaceRepositoryEditableActions editableRepository,
             InterfaceMomentExporter exporter) {

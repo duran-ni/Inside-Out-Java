@@ -1,5 +1,6 @@
 package dev.nieves.controller;
 
+import com.google.inject.Inject;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
 import dev.nieves.model.MonthYear;
@@ -14,6 +15,7 @@ public class MomentController {
 
     private final InterfaceDiaryService diaryService;
 
+    @Inject
     public MomentController(InterfaceDiaryService diaryService) {
         this.diaryService = diaryService;
     }

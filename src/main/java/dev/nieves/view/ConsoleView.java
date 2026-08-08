@@ -1,5 +1,6 @@
 package dev.nieves.view;
 
+import com.google.inject.Inject;
 import dev.nieves.controller.MomentController;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
@@ -41,6 +42,7 @@ public class ConsoleView {
      * @param controller controlador que coordina las peticiones hacia el Service
      * @param scanner    lector de la entrada estándar del usuario
      */
+    @Inject
     public ConsoleView(MomentController controller, Scanner scanner) {
         this.controller = controller;
         this.scanner = scanner;

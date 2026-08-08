@@ -1,5 +1,6 @@
 package dev.nieves.view;
 
+import com.google.inject.Inject;
 import dev.nieves.security.InterfaceAccessService;
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ public class AccessView {
     private final InterfaceAccessService accessService;
     private final Scanner scanner;
 
+    @Inject
     public AccessView(InterfaceAccessService accessService, Scanner scanner) {
         this.accessService = accessService;
         this.scanner = scanner;
