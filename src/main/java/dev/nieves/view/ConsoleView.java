@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -34,13 +35,22 @@ public class ConsoleView {
 
     private final MomentController controller;
     private final Scanner scanner;
+    private final Map<String, Runnable> menuActions = Map.of(
+            "1", this::addMoment,
+            "2", this::listMoments,
+            "3", this::deleteMoment,
+            "4", this::updateMoment,
+            "5", this::filterByEmotion,
+            "6", this::filterByMonth,
+            "7", this::exportToCsv,
+            "8", this::exit);
     private boolean running;
 
     /**
      * Crea la vista de consola, inyectando el controlador y el lector de entrada.
      *
      * @param controller controlador que coordina las peticiones hacia el Service
-     * @param scanner    lector de la entrada estándar del usuario
+     * @param scanner lector de la entrada estándar del usuario
      */
     @Inject
     public ConsoleView(MomentController controller, Scanner scanner) {
@@ -61,22 +71,12 @@ public class ConsoleView {
     }
 
     private void handleOption(String option) {
-        switch (option) {
-            case "1" -> addMoment();
-            case "2" -> listMoments();
-            case "3" -> deleteMoment();
-            case "4" -> updateMoment();
-            case "5" -> filterByEmotion();
-            case "6" -> filterByMonth();
-            case "7" -> exportToCsv();
-            case "8" -> exit();
-            default -> System.out.println("Opción no válida, inténtalo de nuevo.");
+        Runnable action = menuActions.get(option);
+        if (action == null) {
+            System.out.println("Opción no válida, inténtalo de nuevo.");
+            return;
         }
-    }
-
-    private void exit() {
-        System.out.println("¡Hasta pronto! Gracias por usar Mi Diario.");
-        running = false;
+        action.run();
     }
 
     private void addMoment() {
@@ -137,6 +137,17 @@ public class ConsoleView {
         }
     }
 
+    private Integer readId(String prompt) {
+        System.out.print(prompt);
+        String input = scanner.nextLine();
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("El id debe ser un número.");
+            return null;
+        }
+    }
+
     private void updateMoment() {
         Integer id = readId("Id del momento a modificar: ");
         if (id == null) {
@@ -177,46 +188,6 @@ public class ConsoleView {
         }
     }
 
-    private void filterByEmotion() {
-        Emotion emotion = readEmotion();
-        if (emotion == null) {
-            return;
-        }
-        List<Moment> moments = controller.getMomentsByEmotion(emotion);
-        if (moments.isEmpty()) {
-            System.out.println("No hay momentos con esa emoción.");
-            return;
-        }
-        for (Moment moment : moments) {
-            printMoment(moment);
-        }
-    }
-
-    private void filterByMonth() {
-        LocalDate referenceDate = readDate("Introduce una fecha del mes a filtrar (dd/MM/yyyy): ");
-        if (referenceDate == null) {
-            return;
-        }
-        MonthYear monthYear = new MonthYear(referenceDate.getMonthValue(), referenceDate.getYear());
-        List<Moment> moments = controller.getMomentsByMonth(monthYear);
-        if (moments.isEmpty()) {
-            System.out.println("No hay momentos en ese mes.");
-            return;
-        }
-        for (Moment moment : moments) {
-            printMoment(moment);
-        }
-    }
-
-    private void exportToCsv() {
-        try {
-            String filePath = controller.exportToCsv();
-            System.out.println("Momentos exportados correctamente en: " + filePath);
-        } catch (IllegalStateException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
     private Emotion readEmotionOrKeepCurrent(Emotion current) {
         System.out.println("Elige una nueva emoción (0 para mantener: " + current.getDisplayName() + "):");
         Emotion[] emotions = Emotion.values();
@@ -251,14 +222,18 @@ public class ConsoleView {
         }
     }
 
-    private Integer readId(String prompt) {
-        System.out.print(prompt);
-        String input = scanner.nextLine();
-        try {
-            return Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("El id debe ser un número.");
-            return null;
+    private void filterByEmotion() {
+        Emotion emotion = readEmotion();
+        if (emotion == null) {
+            return;
+        }
+        List<Moment> moments = controller.getMomentsByEmotion(emotion);
+        if (moments.isEmpty()) {
+            System.out.println("No hay momentos con esa emoción.");
+            return;
+        }
+        for (Moment moment : moments) {
+            printMoment(moment);
         }
     }
 
@@ -280,6 +255,22 @@ public class ConsoleView {
         }
     }
 
+    private void filterByMonth() {
+        LocalDate referenceDate = readDate("Introduce una fecha del mes a filtrar (dd/MM/yyyy): ");
+        if (referenceDate == null) {
+            return;
+        }
+        MonthYear monthYear = new MonthYear(referenceDate.getMonthValue(), referenceDate.getYear());
+        List<Moment> moments = controller.getMomentsByMonth(monthYear);
+        if (moments.isEmpty()) {
+            System.out.println("No hay momentos en ese mes.");
+            return;
+        }
+        for (Moment moment : moments) {
+            printMoment(moment);
+        }
+    }
+
     private LocalDate readDate(String prompt) {
         System.out.print(prompt);
         String input = scanner.nextLine();
@@ -289,5 +280,19 @@ public class ConsoleView {
             System.out.println("Formato de fecha no válido, debe ser dd/MM/yyyy.");
             return null;
         }
+    }
+
+    private void exportToCsv() {
+        try {
+            String filePath = controller.exportToCsv();
+            System.out.println("Momentos exportados correctamente en: " + filePath);
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void exit() {
+        System.out.println("¡Hasta pronto! Gracias por usar Mi Diario.");
+        running = false;
     }
 }

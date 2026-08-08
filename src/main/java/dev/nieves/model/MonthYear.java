@@ -29,10 +29,9 @@ public class MonthYear {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (!(obj instanceof MonthYear other)) {
             return false;
         }
-        MonthYear other = (MonthYear) obj;
         return month == other.month && year == other.year;
     }
 
