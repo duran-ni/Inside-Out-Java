@@ -3,6 +3,7 @@ package dev.nieves.view;
 import dev.nieves.controller.MomentController;
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
+import dev.nieves.model.MonthYear;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -64,7 +65,7 @@ public class ConsoleView {
             case "3" -> deleteMoment();
             case "4" -> updateMoment();
             case "5" -> filterByEmotion();
-            case "6" -> System.out.println("Filtrar por mes (pendiente de implementar)");
+            case "6" -> filterByMonth();
             case "7" -> System.out.println("Exportar a CSV (pendiente de implementar)");
             case "8" -> {
                 running = false;
@@ -179,6 +180,22 @@ public class ConsoleView {
         List<Moment> moments = controller.getMomentsByEmotion(emotion);
         if (moments.isEmpty()) {
             System.out.println("No hay momentos con esa emoción.");
+            return;
+        }
+        for (Moment moment : moments) {
+            printMoment(moment);
+        }
+    }
+
+    private void filterByMonth() {
+        LocalDate referenceDate = readDate("Introduce una fecha del mes a filtrar (dd/MM/yyyy): ");
+        if (referenceDate == null) {
+            return;
+        }
+        MonthYear monthYear = new MonthYear(referenceDate.getMonthValue(), referenceDate.getYear());
+        List<Moment> moments = controller.getMomentsByMonth(monthYear);
+        if (moments.isEmpty()) {
+            System.out.println("No hay momentos en ese mes.");
             return;
         }
         for (Moment moment : moments) {

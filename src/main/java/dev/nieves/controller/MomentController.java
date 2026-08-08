@@ -2,6 +2,7 @@ package dev.nieves.controller;
 
 import dev.nieves.model.Emotion;
 import dev.nieves.model.Moment;
+import dev.nieves.model.MonthYear;
 import dev.nieves.service.InterfaceDiaryService;
 import java.time.LocalDate;
 import java.util.List;
@@ -39,5 +40,9 @@ public class MomentController {
 
     public List<Moment> getMomentsByEmotion(Emotion emotion) {
         return diaryService.getMomentsByEmotion(emotion);
+    }
+
+    public List<Moment> getMomentsByMonth(MonthYear monthYear) {
+        return diaryService.getMomentsByMonth(monthYear);
     }
 }
