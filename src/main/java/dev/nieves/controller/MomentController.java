@@ -36,4 +36,8 @@ public class MomentController {
     public Moment updateMoment(Integer id, String title, String description, Emotion emotion, LocalDate momentDate) {
         return diaryService.updateMoment(id, title, description, emotion, momentDate);
     }
+
+    public List<Moment> getMomentsByEmotion(Emotion emotion) {
+        return diaryService.getMomentsByEmotion(emotion);
+    }
 }

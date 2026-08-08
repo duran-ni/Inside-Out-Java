@@ -63,7 +63,7 @@ public class ConsoleView {
             case "2" -> listMoments();
             case "3" -> deleteMoment();
             case "4" -> updateMoment();
-            case "5" -> System.out.println("Filtrar por emoción (pendiente de implementar)");
+            case "5" -> filterByEmotion();
             case "6" -> System.out.println("Filtrar por mes (pendiente de implementar)");
             case "7" -> System.out.println("Exportar a CSV (pendiente de implementar)");
             case "8" -> {
@@ -168,6 +168,21 @@ public class ConsoleView {
             System.out.println("Momento modificado correctamente.");
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void filterByEmotion() {
+        Emotion emotion = readEmotion();
+        if (emotion == null) {
+            return;
+        }
+        List<Moment> moments = controller.getMomentsByEmotion(emotion);
+        if (moments.isEmpty()) {
+            System.out.println("No hay momentos con esa emoción.");
+            return;
+        }
+        for (Moment moment : moments) {
+            printMoment(moment);
         }
     }
 
