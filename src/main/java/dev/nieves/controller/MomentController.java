@@ -45,4 +45,8 @@ public class MomentController {
     public List<Moment> getMomentsByMonth(MonthYear monthYear) {
         return diaryService.getMomentsByMonth(monthYear);
     }
+
+    public String exportToCsv() {
+        return diaryService.exportToCsv();
+    }
 }

@@ -66,7 +66,7 @@ public class ConsoleView {
             case "4" -> updateMoment();
             case "5" -> filterByEmotion();
             case "6" -> filterByMonth();
-            case "7" -> System.out.println("Exportar a CSV (pendiente de implementar)");
+            case "7" -> exportToCsv();
             case "8" -> {
                 running = false;
             }
@@ -200,6 +200,15 @@ public class ConsoleView {
         }
         for (Moment moment : moments) {
             printMoment(moment);
+        }
+    }
+
+    private void exportToCsv() {
+        try {
+            String filePath = controller.exportToCsv();
+            System.out.println("Momentos exportados correctamente en: " + filePath);
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
