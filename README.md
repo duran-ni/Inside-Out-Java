@@ -2,12 +2,26 @@
 
 ## 🔍 Índice
 
+- [Descripción](#descripción)
+- [Pre-requisitos](#pre-requisitos)
+- [Estructura de carpetas](#estructura-de-carpetas)
+- [Instalación](#instalación)
+- [Ejecución de los tests](#ejecución-de-los-tests)
+- [Historias de Usuario y Criterios de Aceptación](#historias-de-usuario-y-criterios-de-aceptación)
+- [Diagramas](#diagramas)
+- [Capturas](#capturas)
+- [Autora](#autora)
+
 
 ---
 
 ## 📝 Descripción
 
-Aplicación de consola desarrollada en Java que permite al usuario gestionar sus momentos vividos ("Mi Diario"). Cada momento registra un título, una descripción, una emoción asociada y la fecha en la que ocurrió, además de metadatos de creación y modificación. El usuario puede añadir, listar, eliminar y filtrar momentos por emoción o por mes.
+Aplicación de consola desarrollada en Java que permite al usuario gestionar sus momentos vividos ("Mi Diario"). Cada momento registra un título, una descripción, una emoción asociada y la fecha en la que ocurrió, además de metadatos de creación y modificación. El usuario puede añadir, listar, eliminar y filtrar momentos por emoción o por mes, exportarlos a un archivo CSV, y accede a la aplicación mediante una contraseña.
+
+El proyecto sigue una arquitectura por capas (Vista → Controlador →
+Servicio → Repositorio → Modelo), aplicando principios SOLID, inyección
+de dependencias con Guice, y una cobertura de tests del 91 %.
 
 ---
 
@@ -20,22 +34,61 @@ Aplicación de consola desarrollada en Java que permite al usuario gestionar sus
 
 ## 📁 Estructura de carpetas
 
+## Estructura de carpetas
+
+```
+Inside-Out-Java/
+├── docs/
+│   ├── 57-tests-run.png
+│   └── tests-coverage.png
+├── exports/                          # Archivos CSV generados por la app (ignorado en Git)
+├── src/
+│   ├── main/
+│   │   └── java/dev/nieves/
+│   │       ├── config/                # Configuración de Guice (inyección de dependencias)
+│   │       ├── controller/            # Coordina la Vista con el Service
+│   │       ├── export/                # Exportación de momentos a CSV
+│   │       ├── model/                 # Entidades y Value Objects del dominio
+│   │       ├── repository/            # Acceso a datos (Map en memoria)
+│   │       ├── security/              # Control de acceso por contraseña
+│   │       ├── service/               # Lógica de negocio
+│   │       ├── view/                  # Entrada/salida por consola
+│   │       └── App.java               # Punto de entrada de la aplicación
+│   └── test/
+│       └── java/dev/nieves/
+│           ├── controller/
+│           ├── security/
+│           ├── service/
+│           ├── view/
+│           └── AppTest.java
+├── .editorconfig
+├── .gitignore
+├── pom.xml
+└── README.md
+```
+
 ---
 
 ## 🛠️ Instalación
 
 1. Clonar el repositorio:
 ```bash
-   git clone https://github.com/<usuario>/
+   git clone https://github.com/duran-ni/Inside-Out-Java
 ```
-2. Instalar dependencias y compilar el proyecto:
+2. Compilar el proyecto:
 ```bash
    mvn clean install
 ```
 3. Ejecutar la aplicación:
 ```bash
-   mvn exec:java
+   mvn exec:java -Dexec.mainClass="dev.nieves.App"
 ```
+La aplicación solicitará una contraseña de acceso (ver `PasswordAccessService.java`para más detalles sobre cómo se valida).
+
+> **Nota:** en Windows, si usas Git Bash, los caracteres con tilde/ñ pueden
+> mostrarse incorrectamente en la terminal por un problema de codificación
+> de la propia terminal (no del programa). Se recomienda usar Command
+> Prompt o PowerShell con `chcp 65001` ejecutado previamente.
 ---
 
 ## ✅ Ejecución de los tests
@@ -43,14 +96,14 @@ Aplicación de consola desarrollada en Java que permite al usuario gestionar sus
 ```bash
 mvn test
 ```
---- 
+---
 
 ## 📋 Historias de Usuario y Criterios de Aceptación
 
 ### HU1 - Añadir un momento vivido
 
-**COMO** usuario 
-**QUIERO** añadir un momento vivido 
+**COMO** usuario
+**QUIERO** añadir un momento vivido
 **PARA** poder visualizarlo cuando lo necesite recordar
 
 - **Dado** que estoy en el menú principal, **cuando** selecciono "Añadir momento", **entonces** el sistema me solicita título, fecha del momento, descripción y emoción.
@@ -146,12 +199,172 @@ mvn test
 
 ## 🧮 Diagramas
 
-> TODO: incluir diagrama de casos de uso, diagrama de secuencia y diagrama
-> UML de clases (Mermaid) una vez definido el modelo de dominio.
+ ### Diagrama de casos de uso
+
+```mermaid
+flowchart LR
+    Usuario((Usuario))
+
+    Usuario --> UC1[Acceder con contraseña]
+    Usuario --> UC2[Añadir momento]
+    Usuario --> UC3[Listar momentos]
+    Usuario --> UC4[Eliminar momento]
+    Usuario --> UC5[Modificar momento]
+    Usuario --> UC6[Filtrar por emoción]
+    Usuario --> UC7[Filtrar por mes]
+    Usuario --> UC8[Exportar a CSV]
+    Usuario --> UC9[Salir del programa]
+```
+
+### Diagrama de secuencia (ejemplo: Añadir momento)
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Vista as ConsoleView
+    participant Controlador as MomentController
+    participant Servicio as DiaryService
+    participant Repositorio as InMemoryDiaryRepository
+
+    Usuario->>Vista: Selecciona "Añadir momento"
+    Vista->>Vista: Pide título, descripción, emoción y fecha
+    Vista->>Controlador: addMoment(title, description, emotion, date)
+    Controlador->>Servicio: addMoment(title, description, emotion, date)
+    Servicio->>Servicio: validateMomentData(...)
+    Servicio->>Repositorio: save(moment)
+    Repositorio-->>Servicio: moment (con id asignado)
+    Servicio-->>Controlador: moment
+    Controlador-->>Vista: moment
+    Vista-->>Usuario: "Momento añadido correctamente."
+```
+
+### Diagrama de clases
+
+```mermaid
+classDiagram
+    class Moment {
+        -Integer id
+        -String title
+        -String description
+        -Emotion emotion
+        -LocalDate momentDate
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
+    }
+
+    class Emotion {
+        <<enumeration>>
+        JOY
+        SADNESS
+        ANGER
+        DISGUST
+        FEAR
+        ANXIETY
+        ENVY
+        SHAME
+        BOREDOM
+        NOSTALGIA
+    }
+
+    class MonthYear {
+        -int month
+        -int year
+    }
+
+    class InterfaceRepositoryBasicActions {
+        <<interface>>
+        +save(Moment) Moment
+        +list() List~Moment~
+        +show(Integer) Optional~Moment~
+    }
+
+    class InterfaceRepositoryEditableActions {
+        <<interface>>
+        +update(Integer, Moment) Moment
+        +delete(Integer) boolean
+    }
+
+    class InMemoryDiaryRepository {
+        -Map~Integer, Moment~ moments
+        -AtomicInteger nextId
+    }
+
+    class InterfaceDiaryService {
+        <<interface>>
+        +addMoment(...) Moment
+        +listMoments() List~Moment~
+        +deleteMoment(Integer)
+        +updateMoment(...) Moment
+        +getMomentsByEmotion(Emotion) List~Moment~
+        +getMomentsByMonth(MonthYear) List~Moment~
+        +exportToCsv() String
+        +getMomentById(Integer) Moment
+    }
+
+    class DiaryService {
+        -InterfaceRepositoryBasicActions basicRepository
+        -InterfaceRepositoryEditableActions editableRepository
+        -InterfaceMomentExporter exporter
+    }
+
+    class InterfaceMomentExporter {
+        <<interface>>
+        +export(List~Moment~) String
+    }
+
+    class CsvMomentExporter {
+        -Path exportDirectory
+    }
+
+    class InterfaceAccessService {
+        <<interface>>
+        +authenticate(String) boolean
+        +isLocked() boolean
+    }
+
+    class PasswordAccessService {
+        -int failedAttempts
+    }
+
+    class MomentController {
+        -InterfaceDiaryService diaryService
+    }
+
+    class ConsoleView {
+        -MomentController controller
+        -Scanner scanner
+    }
+
+    class AccessView {
+        -InterfaceAccessService accessService
+        -Scanner scanner
+    }
+
+    Moment --> Emotion
+    InMemoryDiaryRepository ..|> InterfaceRepositoryBasicActions
+    InMemoryDiaryRepository ..|> InterfaceRepositoryEditableActions
+    InMemoryDiaryRepository --> Moment
+    DiaryService ..|> InterfaceDiaryService
+    DiaryService --> InterfaceRepositoryBasicActions
+    DiaryService --> InterfaceRepositoryEditableActions
+    DiaryService --> InterfaceMomentExporter
+    DiaryService --> MonthYear
+    CsvMomentExporter ..|> InterfaceMomentExporter
+    PasswordAccessService ..|> InterfaceAccessService
+    MomentController --> InterfaceDiaryService
+    ConsoleView --> MomentController
+    AccessView --> InterfaceAccessService
+```
+
 
 ---
 
 ## 📷 Capturas
+
+### Tests en verde y Coverage
+
+![Cobertura de tests](docs/tests-coverage.png)
+![Tests en verde](docs/57-tests-run.png)
 
 ---
 

@@ -75,3 +75,7 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+##############################
+## Mi Diario - archivos generados
+##############################
+exports/
