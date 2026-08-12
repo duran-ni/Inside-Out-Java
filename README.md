@@ -2,15 +2,15 @@
 
 ## 🔍 Índice
 
-- [Descripción](#descripción)
-- [Pre-requisitos](#pre-requisitos)
-- [Estructura de carpetas](#estructura-de-carpetas)
-- [Instalación](#instalación)
-- [Ejecución de los tests](#ejecución-de-los-tests)
-- [Historias de Usuario y Criterios de Aceptación](#historias-de-usuario-y-criterios-de-aceptación)
-- [Diagramas](#diagramas)
-- [Capturas](#capturas)
-- [Autora](#autora)
+- [Descripción](#-descripción)
+- [Pre-requisitos](#%EF%B8%8F-pre-requisitos)
+- [Estructura de carpetas](#-estructura-de-carpetas)
+- [Instalación](#%EF%B8%8F-instalación)
+- [Ejecución de los tests](#-ejecución-de-los-tests)
+- [Historias de Usuario y Criterios de Aceptación](#-historias-de-usuario-y-criterios-de-aceptación)
+- [Diagramas](#-diagramas)
+- [Capturas](#-capturas)
+- [Autora](#%EF%B8%8F-autora)
 
 
 ---
@@ -236,6 +236,44 @@ sequenceDiagram
     Servicio-->>Controlador: moment
     Controlador-->>Vista: moment
     Vista-->>Usuario: "Momento añadido correctamente."
+```
+
+### Diagrama de secuencia (ejemplo: Modificar momento)
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Vista as ConsoleView
+    participant Controlador as MomentController
+    participant Servicio as DiaryService
+    participant Repositorio as InMemoryDiaryRepository
+
+    Usuario->>Vista: Selecciona "Modificar momento"
+    Vista->>Vista: Pide el id del momento
+    Vista->>Controlador: getMomentById(id)
+    Controlador->>Servicio: getMomentById(id)
+    Servicio->>Repositorio: show(id)
+
+    alt Momento no encontrado
+        Repositorio-->>Servicio: Optional vacío
+        Servicio-->>Controlador: lanza IllegalArgumentException
+        Controlador-->>Vista: propaga la excepción
+        Vista-->>Usuario: "Error: el momento no existe"
+    else Momento encontrado
+        Repositorio-->>Servicio: Optional con el momento
+        Servicio-->>Controlador: moment actual
+        Controlador-->>Vista: moment actual
+        Vista-->>Usuario: Muestra los datos actuales
+        Vista->>Vista: Pide los nuevos valores (o mantiene los actuales)
+        Vista->>Controlador: updateMoment(id, title, description, emotion, date)
+        Controlador->>Servicio: updateMoment(id, title, description, emotion, date)
+        Servicio->>Servicio: validateMomentData(...)
+        Servicio->>Repositorio: update(id, moment)
+        Repositorio-->>Servicio: moment actualizado
+        Servicio-->>Controlador: moment actualizado
+        Controlador-->>Vista: moment actualizado
+        Vista-->>Usuario: "Momento modificado correctamente."
+    end
 ```
 
 ### Diagrama de clases
