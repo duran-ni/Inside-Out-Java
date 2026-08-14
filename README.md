@@ -81,9 +81,9 @@ Inside-Out-Java/
 ```
 3. Ejecutar la aplicación:
 ```bash
-   mvn exec:java -Dexec.mainClass="dev.nieves.App"
+   mvn compile exec:java -Dexec.mainClass="dev.nieves.App"
 ```
-La aplicación solicitará una contraseña de acceso (ver `PasswordAccessService.java`para más detalles sobre cómo se valida).
+La aplicación solicitará una contraseña de acceso: `diario2026` (Por seguridad, el código no almacena la contraseña en texto plano — internamente se valida contra su hash SHA-256, ver `PasswordAccessService.java`.)
 
 > **Nota:** en Windows, si usas Git Bash, los caracteres con tilde/ñ pueden
 > mostrarse incorrectamente en la terminal por un problema de codificación
